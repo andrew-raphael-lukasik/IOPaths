@@ -280,7 +280,7 @@ namespace IOPaths
 		public static void Delete ( this IFile file )
 		{
 			try {
-				if( file.Exists() ) IO.File.Delete( file.AbsPath );
+				IO.File.Delete( file.AbsPath );
 			}
 			catch( System.Exception ex )
 			{
@@ -293,7 +293,7 @@ namespace IOPaths
 		public static void WriteAllBytes ( this IFile file , byte[] bytes )
 		{
 			try {
-				if( file.Exists() ) IO.File.WriteAllBytes( file.AbsPath , bytes );
+				IO.File.WriteAllBytes( file.AbsPath , bytes );
 			}
 			catch( System.Exception ex )
 			{
@@ -306,7 +306,7 @@ namespace IOPaths
 		public static void WriteAllText ( this IFile file , string text )
 		{
 			try {
-				if( file.Exists() ) IO.File.WriteAllText( file.AbsPath , text );
+				IO.File.WriteAllText( file.AbsPath , text );
 			}
 			catch( System.Exception ex )
 			{
@@ -319,7 +319,33 @@ namespace IOPaths
 		public static void WriteAllLines ( this IFile file , IEnumerable<string> lines )
 		{
 			try {
-				if( file.Exists() ) IO.File.WriteAllLines( file.AbsPath , lines );
+				IO.File.WriteAllLines( file.AbsPath , lines );
+			}
+			catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
+				throw;
+			}
+		}
+		
+		public static void ReadAllBytes ( this IFile file )
+		{
+			try {
+				return IO.File.ReadAllBytes( file.AbsPath );
+			}
+			catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
+				throw;
+			}
+		}
+
+		public static void ReadAllText ( this IFile file )
+		{
+			try {
+				return IO.File.ReadAllText( file.AbsPath );
 			}
 			catch( System.Exception ex )
 			{
