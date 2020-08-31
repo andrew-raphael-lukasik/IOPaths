@@ -329,7 +329,7 @@ namespace IOPaths
 			}
 		}
 		
-		public static void ReadAllBytes ( this IFile file )
+		public static byte[] ReadAllBytes ( this IFile file )
 		{
 			try {
 				return IO.File.ReadAllBytes( file.AbsPath );
@@ -342,7 +342,7 @@ namespace IOPaths
 			}
 		}
 
-		public static void ReadAllText ( this IFile file )
+		public static string ReadAllText ( this IFile file )
 		{
 			try {
 				return IO.File.ReadAllText( file.AbsPath );
