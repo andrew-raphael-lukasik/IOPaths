@@ -97,6 +97,7 @@ namespace PathTypes
 		public RelativeAssetFilePath ( string str )
 		{
 			const string k_assetsPathStart = "Assets/";
+			string right ( string value , int length ) => value!=null && value.Length>length ? value.Substring( value.Length-length ) : value;
 
 			#if DEBUG
 			Assert.IsFalse( str.StartsWith("/") , $"{nameof(FileName)} starts with '/' character" );
@@ -105,7 +106,7 @@ namespace PathTypes
 			#endif
 
 			if( !str.StartsWith(k_assetsPathStart) )
-				this.Value = str.Right( str.Length - str.IndexOf(k_assetsPathStart) );
+				this.Value = right( str , str.Length - str.IndexOf(k_assetsPathStart) );
 			else
 				this.Value = str;
 		}
@@ -155,7 +156,6 @@ namespace PathTypes
 
 	public interface IDirectory { string Path { get; } }
 	public interface IFile { string Path { get; } }
-
 
 
 	public static class LocalExtensionMethods
@@ -275,7 +275,7 @@ namespace PathTypes
 				throw;
 			}
 		}
-
+		
 	}
 	
 }
