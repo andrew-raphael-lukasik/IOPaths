@@ -8,8 +8,11 @@ AbsoluteFilePath persistentDataCache =
 		.Combine( (FileName) "cached.bytes" );
 
 if( persistentDataCache.Exists() )
+{
+	byte[] oldBytes = persistentDataCache.ReadAllBytes();
+	Debug.Log($"old cache was {oldBytes.Length} bytes long");
 	persistentDataCache.Delete();
-
+}
 persistentDataCache.WriteAllBytes(
     new byte[]{0,1,2,4,8,16,32,64,128,255}
 );
