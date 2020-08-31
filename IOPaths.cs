@@ -1,4 +1,5 @@
 ﻿using IO = System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -22,6 +23,7 @@ namespace IOPaths
 		public bool Contains ( string str ) => this.Value.Contains(str);
 		public AbsoluteFilePath ChangeExtension ( string extension ) => new AbsoluteFilePath( IO.Path.ChangeExtension(this.Value,extension) );
 		string IFile.Path => this.Value;
+		string IFile.AbsPath => this.Value;
 		public static implicit operator AbsoluteFilePath ( string path ) => new AbsoluteFilePath( path );
 		public static implicit operator string ( AbsoluteFilePath structure ) => structure.Value;
 		public static implicit operator ResourceFilePath ( AbsoluteFilePath absoluteFilePath )
@@ -46,7 +48,7 @@ namespace IOPaths
 			this.Value = str;
 		}
 		string IDirectory.Path => this.Value;
-		// public bool Exists () => IO.Directory.Exists(this.Value);
+		string IDirectory.AbsPath => this.Value;
 		public void Create () => IO.Directory.CreateDirectory(this.Value);
 		public static implicit operator AbsoluteDirectoryPath ( string path ) => new AbsoluteDirectoryPath( path );
 		public static implicit operator string ( AbsoluteDirectoryPath structure ) => structure.Value;
@@ -67,13 +69,14 @@ namespace IOPaths
 			this.Value = str;
 		}
 		string IFile.Path => this.Value;
+		string IFile.AbsPath => throw new System.NotImplementedException("implement me");
 		public static implicit operator ResourceFilePath ( string path ) => new ResourceFilePath( path );
 		public static implicit operator string ( ResourceFilePath structure ) => structure.Value;
 		override public string ToString () => this.Value;
 	}
 
 	// <summary> Directory path relative to Resources folder </summary>
-	public struct ResourceDirectoryPath
+	public struct ResourceDirectoryPath : IDirectory
 	{
 		public readonly string Value;
 		public ResourceDirectoryPath ( string str )
@@ -85,6 +88,8 @@ namespace IOPaths
 
 			this.Value = str;
 		}
+		string IDirectory.Path => this.Value;
+		string IDirectory.AbsPath => throw new System.NotImplementedException("implement me");
 		public static implicit operator ResourceDirectoryPath ( string path ) => new ResourceDirectoryPath( path );
 		public static implicit operator string ( ResourceDirectoryPath structure ) => structure.Value;
 		override public string ToString () => this.Value;
@@ -111,6 +116,7 @@ namespace IOPaths
 				this.Value = str;
 		}
 		string IFile.Path => this.Value;
+		string IFile.AbsPath => throw new System.NotImplementedException("implement me");
 		public static implicit operator RelativeAssetFilePath ( AbsoluteFilePath path ) => new RelativeAssetFilePath(path);
 		public static implicit operator RelativeAssetFilePath ( string str ) => new RelativeAssetFilePath(str);
 		public static implicit operator string ( RelativeAssetFilePath structure ) => structure.Value;
@@ -154,8 +160,16 @@ namespace IOPaths
 
 
 
-	public interface IDirectory { string Path { get; } }
-	public interface IFile { string Path { get; } }
+	public interface IDirectory
+	{
+		string Path { get; }
+		string AbsPath { get; }
+	}
+	public interface IFile
+	{
+		string Path { get; }
+		string AbsPath { get; }
+	}
 
 
 	public static class LocalExtensionMethods
@@ -253,12 +267,12 @@ namespace IOPaths
 		public static bool Exists ( this IFile file )
 		{
 			try {
-				return IO.File.Exists( file.Path );
+				return IO.File.Exists( file.AbsPath );
 			}
 			catch( System.Exception ex )
 			{
 				Debug.LogException(ex);
-				Debug.LogError($"{nameof(file)}: {file.Path}");
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
 				throw;
 			}
 		}
@@ -266,12 +280,51 @@ namespace IOPaths
 		public static void Delete ( this IFile file )
 		{
 			try {
-				if( file.Exists() ) IO.File.Delete( file.Path );
+				if( file.Exists() ) IO.File.Delete( file.AbsPath );
 			}
 			catch( System.Exception ex )
 			{
 				Debug.LogException(ex);
-				Debug.LogError($"{nameof(file)}: {file.Path}");
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
+				throw;
+			}
+		}
+
+		public static void WriteAllBytes ( this IFile file , byte[] bytes )
+		{
+			try {
+				if( file.Exists() ) IO.File.WriteAllBytes( file.AbsPath , bytes );
+			}
+			catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
+				throw;
+			}
+		}
+
+		public static void WriteAllText ( this IFile file , string text )
+		{
+			try {
+				if( file.Exists() ) IO.File.WriteAllText( file.AbsPath , text );
+			}
+			catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
+				throw;
+			}
+		}
+
+		public static void WriteAllLines ( this IFile file , IEnumerable<string> lines )
+		{
+			try {
+				if( file.Exists() ) IO.File.WriteAllLines( file.AbsPath , lines );
+			}
+			catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
 				throw;
 			}
 		}
