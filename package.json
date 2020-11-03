@@ -1,13 +1,12 @@
 {
     "name": "com.andrewraphaellukasik.iopaths",
+    "author": {
+        "name": "Andrzej Rafał Łukasik",
+        "email": "andrew.r.lukasik@gmail.com",
+        "url": "https://github.com/andrew-raphael-lukasik"
+    },
     "displayName": "IO Paths",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Utility structures to help working with file paths in Unity.",
-	"author": {
-		"name": "Andrzej Rafał Łukasik",
-		"email": "andrew.r.lukasik@gmail.com",
-		"url": "https://github.com/andrew-raphael-lukasik"
-	},
-	"type": "library",
-	"hideInEditor": true
+    "hideInEditor": true
 }
