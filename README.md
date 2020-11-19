@@ -30,5 +30,5 @@ persistentDataCache.WriteAllBytes(
 
 ---
 ```
-"com.andrewraphaellukasik.iopaths": "https://github.com/andrew-raphael-lukasik/IOPaths.git"
+"com.andrewraphaellukasik.iopaths": "https://github.com/andrew-raphael-lukasik/IOPaths.git#upm"
 ```
