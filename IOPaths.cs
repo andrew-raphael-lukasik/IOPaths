@@ -354,6 +354,19 @@ namespace IOPaths
 				throw;
 			}
 		}
+
+		public static string[] ReadAllLines ( this IFile file )
+		{
+			try {
+				return IO.File.ReadAllLines( file.AbsPath );
+			}
+			catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(file)}: {file.AbsPath}");
+				throw;
+			}
+		}
 		
 	}
 	
