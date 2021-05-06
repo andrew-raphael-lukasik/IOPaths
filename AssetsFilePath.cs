@@ -1,5 +1,5 @@
-﻿using IO = System.IO;
-using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using IO = System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -7,30 +7,69 @@ using UnityEngine.Assertions;
 namespace IOPaths
 {
 	// <summary> File path relative to Assets folder </summary>
-	public struct AssetsFilePath : IFile
+	public struct AssetsFilePath
 	{
-		public readonly string Value;
-		public AssetsFilePath ( string str )
-		{
-			const string k_assetsPathStart = "Assets/";
-			string right ( string value , int length ) => value!=null && value.Length>length ? value.Substring( value.Length-length ) : value;
 
+
+		public readonly string value;
+
+
+		public AssetsFilePath ( string text )
+		{
 			#if DEBUG
-			Assert.IsFalse( str.StartsWith("/") , $"{nameof(FileName)} starts with '/' character" );
-			Assert.IsFalse( str.StartsWith("\\") , $"{nameof(FileName)} starts with '\\' character" );
-			Assert.IsTrue( str.Contains(k_assetsPathStart) , $"\tSTRING '{str}' DOES NOT CONTAIN '{k_assetsPathStart}'" );
+			Assert.IsFalse( text.StartsWith("/") , $"{nameof(FileName)} starts with '/' character" );
+			Assert.IsFalse( text.StartsWith("\\") , $"{nameof(FileName)} starts with '\\' character" );
 			#endif
 
-			if( !str.StartsWith(k_assetsPathStart) )
-				this.Value = right( str , str.Length - str.IndexOf(k_assetsPathStart) );
-			else
-				this.Value = str;
+			this.value = text;
 		}
-		string IFile.Path => this.Value;
-		string IFile.AbsPath => throw new System.NotImplementedException("implement me");
-		public static implicit operator AssetsFilePath ( AbsoluteFilePath path ) => new AssetsFilePath(path);
-		public static implicit operator AssetsFilePath ( string str ) => new AssetsFilePath(str);
-		public static implicit operator string ( AssetsFilePath structure ) => structure.Value;
-		override public string ToString () => this.Value;
+
+
+		override public string ToString () => this.value;
+		public bool Exists () => !string.IsNullOrEmpty(this.value) && ((AbsoluteFilePath)this).Exists();
+		// string right ( string value , int length ) => value!=null && value.Length>length ? value.Substring( value.Length-length ) : value;
+		public AbsoluteDirectoryPath GetDirectoryName ()
+		{
+			#if DEBUG
+			try {
+			#endif
+
+			return new AbsoluteDirectoryPath( IO.Path.GetDirectoryName( this.value ) );
+
+			#if DEBUG
+			} catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(AssetsFilePath)}: {this.value}");
+				throw;
+			}
+			#endif
+		}
+		
+		public FileName GetFileName ()
+		{
+			#if DEBUG
+			try {
+			#endif
+
+			return new FileName( IO.Path.GetFileName( this.value ) );
+
+			#if DEBUG
+			} catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(AssetsFilePath)}: {this.value}");
+				throw;
+			}
+			#endif
+		}
+
+
+		public static implicit operator AssetsFilePath ( string text ) => new AssetsFilePath(text);
+		public static implicit operator AbsoluteFilePath ( AssetsFilePath obj ) => new AbsoluteFilePath( IO.Path.Combine( Application.dataPath , obj.value ) );
+		public static implicit operator string ( AssetsFilePath obj ) => obj.value;
+
+
 	}
 }
+#endif

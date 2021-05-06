@@ -7,9 +7,12 @@ using UnityEngine.Assertions;
 namespace IOPaths
 {
 	// <summary> Directory path relative to Resources folder </summary>
-	public struct ResourceDirectoryPath : IDirectory
+	public struct ResourceDirectoryPath
 	{
-		public readonly string Value;
+
+		public readonly string value;
+
+
 		public ResourceDirectoryPath ( string str )
 		{
 			#if DEBUG
@@ -17,12 +20,59 @@ namespace IOPaths
 			Assert.IsFalse( str.StartsWith("\\") , $"{nameof(FileName)} starts with '\\' character" );
 			#endif
 
-			this.Value = str;
+			this.value = str;
 		}
-		string IDirectory.Path => this.Value;
-		string IDirectory.AbsPath => throw new System.NotImplementedException("implement me");
+
+
+		override public string ToString () => this.value;
+		public bool Exists () => !string.IsNullOrEmpty(this.value) && UnityEditor.AssetDatabase.IsValidFolder(this.value);
+		public ResourceFilePath Combine ( FileName fileName )
+		{
+			#if DEBUG
+			try {
+			#endif
+
+			return new ResourceFilePath(
+					!string.IsNullOrEmpty( this.value )
+				?	IO.Path.Combine( this.value , fileName )
+				:	(string) fileName
+			);
+
+			#if DEBUG
+			} catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(ResourceFilePath)}: {this.value}, {nameof(fileName)}: {fileName}");
+				throw;
+			}
+			#endif
+		}
+		public ResourceDirectoryPath Combine ( DirectoryName directoryName )
+		{
+			#if DEBUG
+			try {
+			#endif
+
+			return new ResourceDirectoryPath(
+					!string.IsNullOrEmpty( this.value )
+				?	IO.Path.Combine( this.value , directoryName )
+				:	(string) directoryName
+			);
+
+			#if DEBUG
+			} catch( System.Exception ex )
+			{
+				Debug.LogException(ex);
+				Debug.LogError($"{nameof(ResourceDirectoryPath)}: {this.value}, {nameof(directoryName)}: {directoryName}");
+				throw;
+			}
+			#endif
+		}
+
+
 		public static implicit operator ResourceDirectoryPath ( string path ) => new ResourceDirectoryPath( path );
-		public static implicit operator string ( ResourceDirectoryPath structure ) => structure.Value;
-		override public string ToString () => this.Value;
+		public static implicit operator string ( ResourceDirectoryPath structure ) => structure.value;
+
+
 	}
 }
