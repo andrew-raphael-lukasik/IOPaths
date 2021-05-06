@@ -26,7 +26,7 @@ namespace IOPaths.UnitTests
 			string name = System.Guid.NewGuid().ToString();
 			string nameWithExtention = $".{name}.unit_test_file";
 			string absFilePath = IO.Path.Combine( Application.dataPath , nameWithExtention );
-			var stream = IO.File.Create( absFilePath , 4 ,IO.FileOptions.DeleteOnClose );
+			var stream = IO.File.Create( absFilePath , 4 , IO.FileOptions.DeleteOnClose );
 			try
 			{
 				_Exists( nameWithExtention , true );
@@ -84,7 +84,7 @@ namespace IOPaths.UnitTests
 		[Test] public void _Exists_true_1 ()
 		{
 			string name = System.Guid.NewGuid().ToString();
-			string absDirectoryPath = IO.Path.Combine( Application.dataPath , name );
+			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , name );
 			var dir = IO.Directory.CreateDirectory( absDirectoryPath );
 			try
 			{
@@ -99,9 +99,9 @@ namespace IOPaths.UnitTests
 		}
 		[Test] public void _Exists_true_2 ()
 		{
-			string folder = System.Guid.NewGuid().ToString();
-			string subFolder = System.Guid.NewGuid().ToString();
-			string absDirectoryPath = IO.Path.Combine( Application.dataPath , folder , subFolder );
+			string folder = $".{System.Guid.NewGuid().ToString()}/";
+			string subFolder = $"{System.Guid.NewGuid().ToString()}/";
+			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , folder , subFolder );
 			var dir = IO.Directory.CreateDirectory( absDirectoryPath );
 			try
 			{
