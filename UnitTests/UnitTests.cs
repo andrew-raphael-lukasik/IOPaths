@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.TestTools;
 using IO = System.IO;
 
@@ -130,6 +131,24 @@ namespace IOPaths.UnitTests
 			string guid = System.Guid.NewGuid().ToString();
 			_Exists( $".{guid}" , false );
 		}
+		[Test] public void _Exists_true_1 ()
+		{
+			string folder = System.Guid.NewGuid().ToString();
+
+			if( !AssetDatabase.IsValidFolder("Assets/Resources") )
+				AssetDatabase.CreateFolder( "Assets/" , "Resources" );
+			var tempFolderGuid = AssetDatabase.CreateFolder( "Assets/Resources" , folder );
+			try
+			{
+				_Exists( folder , true );
+			}
+			catch( System.Exception ex )
+			{
+				AssetDatabase.DeleteAsset($"Assets/Resources/{folder}");
+				throw ex;
+			}
+			AssetDatabase.DeleteAsset($"Assets/Resources/{folder}");
+		}
 
 		void _Exists ( string path , bool expected )
 		{
@@ -146,12 +165,40 @@ namespace IOPaths.UnitTests
 			string guid = System.Guid.NewGuid().ToString();
 			_Exists( IO.Path.Combine( $"{guid}.unit_test_file" ) , false );
 		}
+		[Test] public void _Exists_true_1 ()
+		{
+			string file = $"{System.Guid.NewGuid().ToString()}.unit_test_file.TextAsset";
+			string folder = System.Guid.NewGuid().ToString();
+
+			if( !AssetDatabase.IsValidFolder("Assets/Resources") )
+				AssetDatabase.CreateFolder( "Assets/" , "Resources" );
+			AssetDatabase.CreateFolder( "Assets/Resources" , folder );
+			var obj = ScriptableObject.CreateInstance<TEST>();
+			AssetDatabase.CreateAsset( obj , $"Assets/Resources/{folder}/{file}" );
+			System.Action dispose = () =>
+			{
+				Object.DestroyImmediate( obj , true );
+				AssetDatabase.DeleteAsset($"Assets/Resources/{folder}/{file}");
+				AssetDatabase.DeleteAsset($"Assets/Resources/{folder}");
+			};
+			try
+			{
+				_Exists( folder , true );
+			}
+			catch( System.Exception ex )
+			{
+				dispose();
+				throw ex;
+			}
+			dispose();
+		}
 
 		void _Exists ( string path , bool expected )
 		{
 			Debug.Log($"\ttesting: '{path}', expected: {expected}");
 			Assert.AreEqual( expected:expected , actual:new ResourceFilePath(path).Exists() );
 		}
+		[System.Serializable] class TEST : ScriptableObject { public string test = "test"; }
 	}
 
 
