@@ -14,18 +14,15 @@ namespace IOPaths.UnitTests
 	{
 		[Test] public void _Exists_false_1 ()
 		{
-			_Exists( System.Guid.NewGuid().ToString() , false );
+			_Exists( "UnitTest_file" , false );
 		}
 		[Test] public void _Exists_false_2 ()
 		{
-			string file = System.Guid.NewGuid().ToString();
-			string folder = System.Guid.NewGuid().ToString();
-			_Exists( $"{folder}/{file}" , false );
+			_Exists( $"UnitTest_folder/UnitTest_file" , false );
 		}
 		[Test] public void _Exists_true_1 ()
 		{
-			string name = System.Guid.NewGuid().ToString();
-			string nameWithExtention = $".{name}.unit_test_file";
+			string nameWithExtention = $".UnitTest_file.unit_test_file";
 			string absFilePath = IO.Path.Combine( Application.dataPath , nameWithExtention );
 			var stream = IO.File.Create( absFilePath , 4 , IO.FileOptions.DeleteOnClose );
 			try
@@ -41,9 +38,8 @@ namespace IOPaths.UnitTests
 		}
 		[Test] public void _Exists_true_2 ()
 		{
-			string name = System.Guid.NewGuid().ToString();
-			string nameWithExtention = $".{name}.unit_test_file";
-			string folder = System.Guid.NewGuid().ToString();
+			string nameWithExtention = $".UnitTest_file.unit_test_file";
+			string folder = "UnitTest_folder";
 			string absDirectoryPath = IO.Path.Combine( Application.dataPath , folder );
 			string absFilePath = IO.Path.Combine( absDirectoryPath , nameWithExtention );
 			var dir = IO.Directory.CreateDirectory( absDirectoryPath );
@@ -73,19 +69,15 @@ namespace IOPaths.UnitTests
 	{
 		[Test] public void _Exists_false_1 ()
 		{
-			string folder = System.Guid.NewGuid().ToString();
-			_Exists( IO.Path.Combine( Application.temporaryCachePath , folder ) , false );
+			_Exists( IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" ) , false );
 		}
 		[Test] public void _Exists_false_2 ()
 		{
-			string subFolder = System.Guid.NewGuid().ToString();
-			string folder = System.Guid.NewGuid().ToString();
-			_Exists( IO.Path.Combine( Application.temporaryCachePath , folder , subFolder ) , false );
+			_Exists( IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" , "UnitTest_subfolder" ) , false );
 		}
 		[Test] public void _Exists_true_1 ()
 		{
-			string name = System.Guid.NewGuid().ToString();
-			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , name );
+			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" );
 			var dir = IO.Directory.CreateDirectory( absDirectoryPath );
 			try
 			{
@@ -100,9 +92,7 @@ namespace IOPaths.UnitTests
 		}
 		[Test] public void _Exists_true_2 ()
 		{
-			string folder = $".{System.Guid.NewGuid().ToString()}/";
-			string subFolder = $"{System.Guid.NewGuid().ToString()}/";
-			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , folder , subFolder );
+			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" , "UnitTest_subfolder" );
 			var dir = IO.Directory.CreateDirectory( absDirectoryPath );
 			try
 			{
@@ -126,35 +116,7 @@ namespace IOPaths.UnitTests
 
 	class _ResourceDirectoryPath
 	{
-		[Test] public void _Exists_false_1 ()
-		{
-			string guid = System.Guid.NewGuid().ToString();
-			_Exists( $".{guid}" , false );
-		}
-		[Test] public void _Exists_true_1 ()
-		{
-			string folder = System.Guid.NewGuid().ToString();
-
-			if( !AssetDatabase.IsValidFolder("Assets/Resources") )
-				AssetDatabase.CreateFolder( "Assets/" , "Resources" );
-			var tempFolderGuid = AssetDatabase.CreateFolder( "Assets/Resources" , folder );
-			try
-			{
-				_Exists( folder , true );
-			}
-			catch( System.Exception ex )
-			{
-				AssetDatabase.DeleteAsset($"Assets/Resources/{folder}");
-				throw ex;
-			}
-			AssetDatabase.DeleteAsset($"Assets/Resources/{folder}");
-		}
-
-		void _Exists ( string path , bool expected )
-		{
-			Debug.Log($"\ttesting: '{path}', expected: {expected}");
-			Assert.AreEqual( expected:expected , actual:new ResourceDirectoryPath(path).Exists() );
-		}
+		
 	}
 
 
@@ -162,28 +124,28 @@ namespace IOPaths.UnitTests
 	{
 		[Test] public void _Exists_false_1 ()
 		{
-			string guid = System.Guid.NewGuid().ToString();
-			_Exists( IO.Path.Combine( $"{guid}.unit_test_file" ) , false );
+			_Exists( "UnitTest_file" , false );
 		}
 		[Test] public void _Exists_true_1 ()
 		{
-			string file = $"{System.Guid.NewGuid().ToString()}.unit_test_file.TextAsset";
-			string folder = System.Guid.NewGuid().ToString();
+			const string asset_resources = "Assets/Resources";
+			string file = "UnitTest_file";
+			string folder = "UnitTest_folder";
+			string resourcePath = $"{folder}/{file}";
 
-			if( !AssetDatabase.IsValidFolder("Assets/Resources") )
+			if( !AssetDatabase.IsValidFolder(asset_resources) )
 				AssetDatabase.CreateFolder( "Assets/" , "Resources" );
-			AssetDatabase.CreateFolder( "Assets/Resources" , folder );
-			var obj = ScriptableObject.CreateInstance<TEST>();
-			AssetDatabase.CreateAsset( obj , $"Assets/Resources/{folder}/{file}" );
-			System.Action dispose = () =>
-			{
-				Object.DestroyImmediate( obj , true );
-				AssetDatabase.DeleteAsset($"Assets/Resources/{folder}/{file}");
-				AssetDatabase.DeleteAsset($"Assets/Resources/{folder}");
-			};
+			if( !AssetDatabase.IsValidFolder(IO.Path.Combine(asset_resources,folder)) )
+				AssetDatabase.CreateFolder( asset_resources , folder );
+			
+			string absFilePath = IO.Path.Combine( Application.dataPath, $"Resources/{folder}/{file}.txt" );
+			IO.File.WriteAllText( absFilePath , "test content" );
+			AssetDatabase.Refresh();
+			System.Action dispose = () => AssetDatabase.DeleteAsset($"{asset_resources}/{folder}");
+			
 			try
 			{
-				_Exists( folder , true );
+				_Exists( resourcePath , true );
 			}
 			catch( System.Exception ex )
 			{
@@ -198,7 +160,6 @@ namespace IOPaths.UnitTests
 			Debug.Log($"\ttesting: '{path}', expected: {expected}");
 			Assert.AreEqual( expected:expected , actual:new ResourceFilePath(path).Exists() );
 		}
-		[System.Serializable] class TEST : ScriptableObject { public string test = "test"; }
 	}
 
 
@@ -206,8 +167,24 @@ namespace IOPaths.UnitTests
 	{
 		[Test] public void _Exists_false_1 ()
 		{
-			string guid = System.Guid.NewGuid().ToString();
-			_Exists( IO.Path.Combine( Application.temporaryCachePath , $".{guid}.unit_test_file" ) , false );
+			_Exists( IO.Path.Combine( Application.temporaryCachePath , "UnitTest_file" ) , false );
+		}
+
+		[Test] public void _Exists_true_1 ()
+		{
+			string absFilePath = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_file.txt" );
+			IO.File.WriteAllText( absFilePath , "test content" );
+			System.Action dispose = () => IO.File.Delete( absFilePath );
+			try
+			{
+				_Exists( absFilePath , true );
+			}
+			catch( System.Exception ex )
+			{
+				dispose();
+				throw ex;
+			}
+			dispose();
 		}
 
 		void _Exists ( string path , bool expected )
