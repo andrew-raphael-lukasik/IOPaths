@@ -25,14 +25,6 @@ namespace IOPaths
 
 
 		override public string ToString () => this.value;
-		public bool Exists ()
-		{
-			#if UNITY_EDITOR
-			return !string.IsNullOrEmpty(this.value) && UnityEditor.AssetDatabase.IsValidFolder(this.value);
-			#else
-			throw new System.NotImplementedException("not implemented");
-			#endif
-		}
 		public ResourceFilePath Combine ( FileName fileName )
 		{
 			#if DEBUG
