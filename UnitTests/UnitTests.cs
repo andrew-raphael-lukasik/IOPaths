@@ -69,19 +69,24 @@ namespace IOPaths.UnitTests
 	{
 		[Test] public void _Exists_false_1 ()
 		{
-			_Exists( IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" ) , false );
+			string path = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" );
+			if( IO.Directory.Exists(path) ) IO.Directory.Delete(path);
+			_Exists( path , false );
 		}
 		[Test] public void _Exists_false_2 ()
 		{
-			_Exists( IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" , "UnitTest_subfolder" ) , false );
+			string path = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" , "UnitTest_subfolder" );
+			if( IO.Directory.Exists(path) ) IO.Directory.Delete(path);
+			_Exists( path , false );
 		}
 		[Test] public void _Exists_true_1 ()
 		{
-			string absDirectoryPath = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" );
-			var dir = IO.Directory.CreateDirectory( absDirectoryPath );
+			string path = IO.Path.Combine( Application.temporaryCachePath , "UnitTest_folder" );
+			if( IO.Directory.Exists(path) ) IO.Directory.Delete(path);
+			var dir = IO.Directory.CreateDirectory( path );
 			try
 			{
-				_Exists( absDirectoryPath , true );
+				_Exists( path , true );
 			}
 			catch( System.Exception ex )
 			{
