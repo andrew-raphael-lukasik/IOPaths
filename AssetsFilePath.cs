@@ -17,8 +17,8 @@ namespace IOPaths
 		public AssetsFilePath ( string text )
 		{
 			#if DEBUG
-			Assert.IsFalse( text.StartsWith("/") , $"{nameof(FileName)} starts with '/' character" );
-			Assert.IsFalse( text.StartsWith("\\") , $"{nameof(FileName)} starts with '\\' character" );
+			Assert.IsFalse( text.StartsWith("/") , $"{nameof(AssetsFilePath)} starts with '/' character" );
+			Assert.IsFalse( text.StartsWith("\\") , $"{nameof(AssetsFilePath)} starts with '\\' character" );
 			#endif
 
 			this.value = text;

@@ -14,8 +14,9 @@ namespace IOPaths
 		public ResourceFilePath ( string str )
 		{
 			#if DEBUG
-			Assert.IsFalse( str.StartsWith("/") , $"{nameof(FileName)} starts with '/' character" );
-			Assert.IsFalse( str.StartsWith("\\") , $"{nameof(FileName)} starts with '\\' character" );
+			Assert.IsFalse( str.StartsWith("/") , $"{nameof(ResourceFilePath)} starts with '/' character" );
+			Assert.IsFalse( str.StartsWith("\\") , $"{nameof(ResourceFilePath)} starts with '\\' character" );
+			Assert.IsFalse( System.IO.Path.HasExtension(str) , $"{nameof(ResourceFilePath)} has an extension, this won't work" );
 			#endif
 
 			this.value = str;
