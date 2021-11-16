@@ -24,12 +24,7 @@ namespace IOPaths
 
 		public override string ToString () => this.value;
 		public bool Exists () => !string.IsNullOrEmpty(this.value) && IO.Directory.Exists(this.value);
-		public bool Create ()
-		{
-			if( !this.Exists() ) return false;
-			IO.Directory.CreateDirectory( this.value );
-			return true;
-		}
+		public void Create () => IO.Directory.CreateDirectory( this.value );
 		public AbsoluteDirectoryPath[] GetDirectories ()
 		{
 			#if DEBUG
