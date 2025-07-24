@@ -14,7 +14,7 @@ namespace IOPaths
 
 		public AbsoluteFilePath ( string str )
 		{
-			#if DEBUG
+			#if DEBUG && !PLATFORM_STANDALONE_LINUX
 			Assert.IsFalse( str.StartsWith("/") , $"{nameof(AbsoluteFilePath)} starts with '/' character" );
 			Assert.IsFalse( str.StartsWith("\\") , $"{nameof(AbsoluteFilePath)} starts with '\\' character" );
 			#endif
